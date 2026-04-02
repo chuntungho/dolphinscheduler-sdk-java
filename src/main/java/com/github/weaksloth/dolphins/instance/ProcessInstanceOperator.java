@@ -44,6 +44,22 @@ public class ProcessInstanceOperator extends AbstractOperator {
     }
   }
 
+  public Boolean batchStart(
+      Long projectCode, ProcessInstanceCreateParam processInstanceCreateParam) {
+    String url =
+        dolphinAddress + "/projects/" + projectCode + "/executors/batch-start-process-instance";
+    log.info("batch start process instance ,url:{}", url);
+    try {
+      HttpRestResult<JsonNode> restResult =
+          dolphinsRestTemplate.postForm(
+              url, getHeader(), processInstanceCreateParam, JsonNode.class);
+      log.info("batch start process response:{}", restResult);
+      return restResult.getSuccess();
+    } catch (Exception e) {
+      throw new DolphinException("batch start dolphin scheduler process instance fail", e);
+    }
+  }
+
   /**
    * page query process's instance list
    *

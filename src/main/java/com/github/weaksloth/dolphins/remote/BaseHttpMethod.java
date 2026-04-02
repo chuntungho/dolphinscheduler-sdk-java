@@ -1,56 +1,29 @@
 package com.github.weaksloth.dolphins.remote;
 
 import com.google.common.base.Strings;
-import org.apache.http.client.methods.*;
+import java.net.URI;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 
-public enum BaseHttpMethod {
-  GET(HttpMethod.GET) {
-    @Override
-    protected HttpRequestBase createRequest(String url) {
-      return new HttpGet(url);
-    }
-  },
+public class BaseHttpMethod {
 
-  POST(HttpMethod.POST) {
-    @Override
-    protected HttpRequestBase createRequest(String url) {
-      return new HttpPost(url);
-    }
-  },
+  private final ClassicRequestBuilder builder;
 
-  PUT(HttpMethod.PUT) {
-    @Override
-    protected HttpRequestBase createRequest(String url) {
-      return new HttpPut(url);
-    }
-  },
-
-  PATCH(HttpMethod.PATCH) {
-    @Override
-    protected HttpRequestBase createRequest(String url) {
-      return new HttpPatch(url);
-    }
-  },
-
-  DELETE(HttpMethod.DELETE) {
-    @Override
-    protected HttpRequestBase createRequest(String url) {
-      return new HttpDelete(url);
-    }
-  };
-
-  private String name;
-
-  BaseHttpMethod(String name) {
-    this.name = name;
+  public BaseHttpMethod(ClassicRequestBuilder builder) {
+    this.builder = builder;
   }
 
-  public HttpRequestBase init(String url) {
-    return createRequest(url);
+  public void addHeader(String name, String value) {
+    builder.addHeader(name, value);
   }
 
-  protected HttpRequestBase createRequest(String url) {
-    throw new UnsupportedOperationException();
+  public void setEntity(HttpEntity httpEntity) {
+    builder.setEntity(httpEntity);
+  }
+
+  public ClassicHttpRequest build() {
+    return builder.build();
   }
 
   /**
@@ -59,13 +32,11 @@ public enum BaseHttpMethod {
    * @param name
    * @return
    */
-  public static BaseHttpMethod of(String name) {
+  public static BaseHttpMethod of(String name, URI uri) {
     if (!Strings.isNullOrEmpty(name)) {
-      for (BaseHttpMethod method : BaseHttpMethod.values()) {
-        if (name.toLowerCase().equals(method.name.toLowerCase())) {
-          return method;
-        }
-      }
+      ClassicRequestBuilder builder = ClassicRequestBuilder.create(name);
+      builder.setUri(uri);
+      return new BaseHttpMethod(builder);
     }
     throw new IllegalArgumentException("Unsupported http method : " + name);
   }

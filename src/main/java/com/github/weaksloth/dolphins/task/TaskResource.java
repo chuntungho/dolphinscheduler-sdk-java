@@ -16,7 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TaskResource {
 
-  private Long id;
+  @Deprecated private Long id;
+
+  private String resourceName;
 
   /**
    * must rewrite,then {@link RequestHttpEntity#bodyToMap()} can transfer object to json string

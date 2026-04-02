@@ -3,9 +3,8 @@ package com.github.weaksloth.dolphins;
 import com.github.weaksloth.dolphins.core.DolphinClient;
 import com.github.weaksloth.dolphins.remote.DolphinsRestTemplate;
 import com.github.weaksloth.dolphins.remote.request.DefaultHttpClientRequest;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.RequestContent;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 
 public class BaseTest {
 
@@ -18,10 +17,8 @@ public class BaseTest {
       new DolphinsRestTemplate(
           new DefaultHttpClientRequest(
               HttpClients.custom()
-                  .addInterceptorLast(new RequestContent(true))
                   .setDefaultRequestConfig(RequestConfig.custom().build())
-                  .build(),
-              RequestConfig.custom().build()));
+                  .build()));
 
   protected DolphinClient getClient() {
     return new DolphinClient(token, dolphinAddress, restTemplate);

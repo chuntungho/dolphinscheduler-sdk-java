@@ -1,7 +1,9 @@
 package com.github.weaksloth.dolphins.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -9,11 +11,20 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import org.jspecify.annotations.NonNull;
 
 /** json utils based on jackson */
 public class JacksonUtils {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = getMapper();
+
+  private static @NonNull ObjectMapper getMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    // fix datax null fields issue
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    return objectMapper;
+  }
 
   public static ObjectNode createObjectNode() {
     return mapper.createObjectNode();
@@ -261,5 +272,13 @@ public class JacksonUtils {
 
   public static ObjectMapper getObjectMapper() {
     return mapper;
+  }
+
+  public static <T> T convert(Object taskParamsMap, Class<T> type) {
+    return mapper.convertValue(taskParamsMap, type);
+  }
+
+  public static <T> T convert(Object taskParamsMap, TypeReference<T> type) {
+    return mapper.convertValue(taskParamsMap, type);
   }
 }

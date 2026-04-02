@@ -8,7 +8,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class SqlTask extends AbstractTask {
-
   /** data source type，eg MYSQL, POSTGRES, HIVE ... */
   private String type;
 

@@ -10,7 +10,10 @@ import com.github.weaksloth.dolphins.remote.DolphinsRestTemplate;
 import com.github.weaksloth.dolphins.remote.HttpRestResult;
 import com.github.weaksloth.dolphins.remote.Query;
 import com.github.weaksloth.dolphins.util.JacksonUtils;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,6 +59,29 @@ public class ProcessOperator extends AbstractOperator {
     }
   }
 
+  public List<SimpleWorkflow> simpleList(Long projectCode) {
+    String url = dolphinAddress + "/projects/" + projectCode + "/process-definition/simple-list";
+    try {
+      HttpRestResult<JsonNode> result =
+          dolphinsRestTemplate.get(url, getHeader(), new Query(), JsonNode.class);
+      return JacksonUtils.parseObject(
+          result.getData().toString(), new TypeReference<List<SimpleWorkflow>>() {});
+    } catch (Exception e) {
+      throw new DolphinException("Failed to get simple list", e);
+    }
+  }
+
+  public DagData queryByCode(Long projectCode, Long code) {
+    String url = dolphinAddress + "/projects/" + projectCode + "/process-definition/" + code;
+    try {
+      HttpRestResult<JsonNode> result =
+          dolphinsRestTemplate.get(url, getHeader(), new Query(), JsonNode.class);
+      return JacksonUtils.parseObject(result.getData().toString(), DagData.class);
+    } catch (Exception e) {
+      throw new DolphinException("Failed to get workflow", e);
+    }
+  }
+
   /**
    * create dolphin scheduler process api:
    * /dolphinscheduler/projects/{projectCode}/process-definition
@@ -66,7 +92,7 @@ public class ProcessOperator extends AbstractOperator {
    */
   public ProcessDefineResp create(Long projectCode, ProcessDefineParam processDefineParam) {
     String url = dolphinAddress + "/projects/" + projectCode + "/process-definition";
-    log.info(
+    log.debug(
         "create process definition, url:{}, param:{}",
         url,
         JacksonUtils.toJSONString(processDefineParam));
@@ -78,7 +104,7 @@ public class ProcessOperator extends AbstractOperator {
         return restResult.getData();
       } else {
         log.error("dolphin scheduler response:{}", restResult);
-        throw new DolphinException("create dolphin scheduler workflow fail");
+        throw new DolphinException("Failed to create workflow: " + restResult.getMsg());
       }
     } catch (Exception e) {
       throw new DolphinException("create dolphin scheduler workflow fail", e);
@@ -97,7 +123,7 @@ public class ProcessOperator extends AbstractOperator {
   public ProcessDefineResp update(
       Long projectCode, ProcessDefineParam processDefineParam, Long processCode) {
     String url = dolphinAddress + "/projects/" + projectCode + "/process-definition/" + processCode;
-    log.info("update process definition, url:{}, param:{}", url, processDefineParam);
+    log.debug("update process definition, url:{}, param:{}", url, processDefineParam);
     try {
       HttpRestResult<ProcessDefineResp> restResult =
           dolphinsRestTemplate.putForm(
@@ -106,7 +132,7 @@ public class ProcessOperator extends AbstractOperator {
         return restResult.getData();
       } else {
         log.error("dolphin scheduler response:{}", restResult);
-        throw new DolphinException("update dolphin scheduler workflow fail");
+        throw new DolphinException("Failed to update workflow: " + restResult.getMsg());
       }
     } catch (Exception e) {
       throw new DolphinException("update dolphin scheduler workflow fail", e);
@@ -173,6 +199,32 @@ public class ProcessOperator extends AbstractOperator {
    */
   public Boolean offline(Long projectCode, Long code) {
     return release(projectCode, code, ProcessReleaseParam.newOfflineInstance());
+  }
+
+  /**
+   * Import workflow, as dolphin only return the last workflow, to avoid misunderstanding, only
+   * success is returned.
+   *
+   * @param projectCode
+   * @param inputStream
+   * @return
+   */
+  public Boolean importWorkflow(Long projectCode, InputStream inputStream) {
+    String url = dolphinAddress + "/projects/" + projectCode + "/process-definition/import";
+    log.info("import workflow, url: {}", url);
+    try {
+      Map<String, Object> body = new HashMap<>();
+      body.put("file", inputStream);
+      HttpRestResult<JsonNode> restResult =
+          dolphinsRestTemplate.postFileForm(url, getHeader(), body, JsonNode.class);
+      if (restResult.getSuccess()) {
+        return true;
+      } else {
+        throw new DolphinException("Failed to import workflow: " + restResult.getMsg());
+      }
+    } catch (Exception e) {
+      throw new DolphinException("Failed to import workflow", e);
+    }
   }
 
   /**

@@ -1,13 +1,17 @@
 package com.github.weaksloth.dolphins.process;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.weaksloth.dolphins.remote.RequestHttpEntity;
-import com.github.weaksloth.dolphins.task.AbstractTask;
+import com.github.weaksloth.dolphins.task.*;
 import com.github.weaksloth.dolphins.util.JacksonUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TaskDefinition {
 
   private Long code;
@@ -23,7 +27,10 @@ public class TaskDefinition {
   /** get from {@link AbstractTask#getTaskType()} */
   private String taskType;
 
-  private AbstractTask taskParams;
+  @JsonIgnore private AbstractTask taskParams;
+
+  @JsonProperty("taskParams")
+  private Object taskParamsMap;
 
   /** NO:the node will not execute;YES:the node will execute,default is YES */
   private String flag;
@@ -44,7 +51,7 @@ public class TaskDefinition {
 
   private String delayTime = "0";
 
-  private Integer environmentCode = -1;
+  private Long environmentCode = -1L;
 
   private String taskExecuteType;
 
@@ -55,6 +62,31 @@ public class TaskDefinition {
   /** YES, NO * */
   private String isCache = "NO";
 
+  private Integer taskGroupId;
+
+  // convert from json
+  public AbstractTask getTaskParams() {
+    if (taskParams == null && taskParamsMap != null) {
+      Class<? extends AbstractTask> type = ShellTask.class;
+      switch (taskType) {
+        case "DATAX":
+          type = DataxTask.class;
+          break;
+        case "HTTP":
+          type = HttpTask.class;
+          break;
+        case "SQL":
+          type = SqlTask.class;
+          break;
+        case "SUB_PROCESS":
+          type = SubProcessTask.class;
+          break;
+      }
+      taskParams = JacksonUtils.convert(taskParamsMap, type);
+    }
+    return taskParams;
+  }
+
   /**
    * must rewrite,then {@link RequestHttpEntity#bodyToMap()} can transfer object to json string
    *
@@ -62,6 +94,10 @@ public class TaskDefinition {
    */
   @Override
   public String toString() {
+    // for json property
+    if (taskParamsMap == null) {
+      taskParamsMap = this.taskParams;
+    }
     return JacksonUtils.toJSONString(this);
   }
 }

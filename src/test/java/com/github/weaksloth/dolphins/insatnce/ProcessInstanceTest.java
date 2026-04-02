@@ -18,8 +18,8 @@ public class ProcessInstanceTest extends BaseTest {
     startParam
         .setProcessDefinitionCode(PROCESS_DEFINITION_CODE)
         .setScheduleTime("")
-        .setFailureStrategy(FailureStrategy.CONTINUE.toString())
-        .setWarningType(WarningType.NONE.toString())
+        .setFailureStrategy(FailureStrategy.CONTINUE)
+        .setWarningType(WarningType.NONE)
         .setWarningGroupId(0L)
         .setExecType("")
         .setStartNodeList("")

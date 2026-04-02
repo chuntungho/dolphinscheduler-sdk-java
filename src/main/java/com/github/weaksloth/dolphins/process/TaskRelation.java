@@ -1,12 +1,15 @@
 package com.github.weaksloth.dolphins.process;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.weaksloth.dolphins.remote.RequestHttpEntity;
 import com.github.weaksloth.dolphins.util.JacksonUtils;
+import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TaskRelation {
 
   private String name = "";
@@ -19,9 +22,9 @@ public class TaskRelation {
 
   private Integer postTaskVersion = 0;
 
-  private Integer conditionType = 0;
+  private String conditionType = "NONE";
 
-  private Integer conditionParams;
+  private Map<String, Object> conditionParams;
 
   /**
    * must rewrite,then {@link RequestHttpEntity#bodyToMap()} can transfer object to json string

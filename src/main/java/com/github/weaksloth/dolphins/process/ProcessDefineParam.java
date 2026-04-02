@@ -52,6 +52,12 @@ public class ProcessDefineParam {
 
   private String timeout;
 
+  private String releaseState;
+
+  public static ProcessDefineParam newOnlineInstance() {
+    return new ProcessDefineParam().setReleaseState("ONLINE");
+  }
+
   public static ProcessDefineParam newParallelInstance() {
     return new ProcessDefineParam().setExecutionType(EXECUTION_TYPE_PARALLEL);
   }

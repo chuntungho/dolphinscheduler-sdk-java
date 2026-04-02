@@ -39,8 +39,10 @@ public class ProjectOperator extends AbstractOperator {
         return result.getData();
       } else {
         log.error("create project response:{}", result);
-        throw new DolphinException("create dolphin scheduler project fail");
+        throw new DolphinException(result.getMsg());
       }
+    } catch (DolphinException e) {
+      throw e;
     } catch (Exception e) {
       throw new DolphinException("create dolphin scheduler project fail", e);
     }
@@ -115,6 +117,26 @@ public class ProjectOperator extends AbstractOperator {
           .getTotalList();
     } catch (Exception e) {
       throw new DolphinException("list dolphin scheduler project fail", e);
+    }
+  }
+
+  public TaskGroupResp createTaskGroup(Long projectCode, TaskGroupParam taskGroupParam) {
+    String url = dolphinAddress + "/task-group/create";
+    Query query = new Query().addParam("projectCode", String.valueOf(projectCode)).build();
+    try {
+      HttpRestResult<TaskGroupResp> result =
+          dolphinsRestTemplate.postForm(
+              url, getHeader(), query, taskGroupParam, TaskGroupResp.class);
+      if (result.getSuccess()) {
+        return result.getData();
+      } else {
+        log.error("Failed to create task group: {}", result.getMsg());
+        throw new DolphinException(result.getMsg());
+      }
+    } catch (DolphinException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 }

@@ -25,7 +25,7 @@ public class DataSourceTest extends BaseTest {
         .setType(DbTypeEnum.MYSQL.name())
         .setHost("localhost")
         .setOther(map);
-    Assert.assertTrue(getClient().opsForDataSource().create(dataSourceCreateParam));
+    Assert.assertTrue(getClient().opsForDataSource().create(dataSourceCreateParam) != null);
   }
 
   /** list all datasource */
@@ -49,7 +49,7 @@ public class DataSourceTest extends BaseTest {
         .setNote("this note is generate by update api")
         .setType(DbTypeEnum.MYSQL.name())
         .setHost("localhost");
-    Assert.assertTrue(getClient().opsForDataSource().update(dataSourceUpdateParam));
+    Assert.assertTrue(getClient().opsForDataSource().update(dataSourceUpdateParam) != null);
   }
 
   @Test

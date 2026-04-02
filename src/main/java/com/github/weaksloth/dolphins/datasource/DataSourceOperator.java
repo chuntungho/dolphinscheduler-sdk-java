@@ -25,15 +25,22 @@ public class DataSourceOperator extends AbstractOperator {
    * create datasource, api:/dolphinscheduler/datasources
    *
    * @param dataSourceCreateParam create datasource param
-   * @return true for success,otherwise false
+   * @return detail
    */
-  public Boolean create(DataSourceCreateParam dataSourceCreateParam) {
+  public DataSourceQueryResp create(DataSourceCreateParam dataSourceCreateParam) {
     String url = dolphinAddress + "/datasources";
     try {
-      HttpRestResult<String> result =
-          dolphinsRestTemplate.postJson(url, getHeader(), dataSourceCreateParam, String.class);
-      log.info("create datasource response:{}", result);
-      return result.getSuccess();
+      HttpRestResult<JsonNode> result =
+          dolphinsRestTemplate.postJson(url, getHeader(), dataSourceCreateParam, JsonNode.class);
+      log.debug("create datasource response:{}", result);
+      if (result.getSuccess()) {
+        return JacksonUtils.parseObject(
+            result.getData().toString(), new TypeReference<DataSourceQueryResp>() {});
+      } else {
+        throw new DolphinException(result.getMsg());
+      }
+    } catch (DolphinException e) {
+      throw e;
     } catch (Exception e) {
       throw new DolphinException("create dolphin scheduler datasource fail", e);
     }
@@ -43,15 +50,16 @@ public class DataSourceOperator extends AbstractOperator {
    * update datasource, api：/dolphinscheduler/datasources/{id}
    *
    * @param dataSourceUpdateParam update datasource param
-   * @return true for success,otherwise false
+   * @return detail
    */
-  public Boolean update(DataSourceUpdateParam dataSourceUpdateParam) {
+  public DataSourceQueryResp update(DataSourceUpdateParam dataSourceUpdateParam) {
     String url = dolphinAddress + "/datasources/" + dataSourceUpdateParam.getId();
     try {
-      HttpRestResult<String> result =
-          dolphinsRestTemplate.putJson(url, getHeader(), dataSourceUpdateParam, String.class);
-      log.info("update datasource response:{}", result);
-      return result.getSuccess();
+      HttpRestResult<JsonNode> result =
+          dolphinsRestTemplate.putJson(url, getHeader(), dataSourceUpdateParam, JsonNode.class);
+      log.debug("update datasource response:{}", result);
+      return JacksonUtils.parseObject(
+          result.getData().toString(), new TypeReference<DataSourceQueryResp>() {});
     } catch (Exception e) {
       throw new DolphinException("update dolphin scheduler datasource fail", e);
     }

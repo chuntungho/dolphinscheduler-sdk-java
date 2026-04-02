@@ -6,7 +6,7 @@ import com.github.weaksloth.dolphins.remote.response.HttpClientResponse;
 import com.github.weaksloth.dolphins.util.HttpUtils;
 import com.google.common.net.MediaType;
 import java.net.URI;
-import org.apache.http.entity.ContentType;
+import org.apache.hc.core5.http.ContentType;
 
 /** dolphin scheduler sdk custom rest template,which can support different http client */
 public class DolphinsRestTemplate {
@@ -156,7 +156,7 @@ public class DolphinsRestTemplate {
   }
 
   /**
-   * post request which parameter is json,Content-Type is MediaType.JSON_UTF_8
+   * post request which parameter is json,Content-Tye is MediaType.JSON_UTF_8
    *
    * @param url
    * @param header

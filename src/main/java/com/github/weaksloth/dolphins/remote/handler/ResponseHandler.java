@@ -8,7 +8,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 
 public class ResponseHandler<T> {
 
