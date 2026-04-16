@@ -7,6 +7,8 @@ public class DataxPayload {
   @JsonProperty("job")
   private DataxJob job;
 
+  public DataxPayload() {}
+
   public static DataxPayload of(DataxJob job) {
     return new DataxPayload(job);
   }

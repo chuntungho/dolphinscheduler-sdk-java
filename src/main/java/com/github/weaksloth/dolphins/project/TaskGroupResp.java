@@ -8,7 +8,9 @@ import lombok.experimental.Accessors;
 public class TaskGroupResp {
   private Integer id;
   private String name;
+  private Long projectCode;
   private Integer groupSize;
+  private Integer useSize;
   private String description;
   private String status;
 }

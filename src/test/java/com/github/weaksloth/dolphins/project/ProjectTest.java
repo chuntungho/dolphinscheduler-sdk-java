@@ -43,4 +43,47 @@ public class ProjectTest extends BaseTest {
     long code = getClient().opsForProject().page(null, null, PROJECT_NAME).get(0).getCode();
     getClient().opsForProject().delete(code);
   }
+
+  @Test
+  public void testCreateTaskGroup() {
+    long projectCode = getClient().opsForProject().page(null, null, PROJECT_NAME).get(0).getCode();
+
+    TaskGroupParam taskGroupParam = new TaskGroupParam();
+    taskGroupParam.setName("test_task_group");
+    taskGroupParam.setDescription("Test task group created by SDK");
+    // taskGroupParam.setResourcePool(10);
+
+    TaskGroupResp taskGroupResp =
+        getClient().opsForProject().createTaskGroup(projectCode, taskGroupParam);
+    System.out.println(taskGroupResp);
+    Assert.assertNotNull(taskGroupResp);
+    Assert.assertEquals("test_task_group", taskGroupResp.getName());
+  }
+
+  @Test
+  public void testQueryTaskGroup() {
+    java.util.List<TaskGroupResp> taskGroups =
+        getClient().opsForProject().queryTaskGroup(null, null, null);
+    System.out.println("Total task groups: " + taskGroups.size());
+    taskGroups.forEach(System.out::println);
+    Assert.assertNotNull(taskGroups);
+  }
+
+  @Test
+  public void testQueryTaskGroupWithPagination() {
+    java.util.List<TaskGroupResp> taskGroups =
+        getClient().opsForProject().queryTaskGroup(1, 10, null);
+    System.out.println("Task groups on page 1: " + taskGroups.size());
+    Assert.assertNotNull(taskGroups);
+  }
+
+  @Test
+  public void testQueryTaskGroupByName() {
+    java.util.List<TaskGroupResp> taskGroups =
+        getClient().opsForProject().queryTaskGroup(null, null, "test_task_group");
+    System.out.println("Found task groups with name 'test_task_group': " + taskGroups.size());
+    if (!taskGroups.isEmpty()) {
+      Assert.assertEquals("test_task_group", taskGroups.get(0).getName());
+    }
+  }
 }

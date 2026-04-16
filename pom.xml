@@ -6,14 +6,14 @@
 
     <groupId>com.github.weaksloth</groupId>
     <artifactId>dolphinscheduler-sdk-java</artifactId>
-    <version>3.2.2.2-RC</version>
+    <version>3.2.2.3-RC</version>
 
     <properties>
         <lombok.version>1.18.22</lombok.version>
         <httpclient5.version>5.2.1</httpclient5.version>
-        <jackson.version>2.9.10</jackson.version>
-        <slf4j.version>1.7.30</slf4j.version>
-        <logback.version>1.2.3</logback.version>
+        <jackson.version>2.15.3</jackson.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.4.14</logback.version>
         <junit.version>4.13</junit.version>
         <guava.version>31.1-jre</guava.version>
         <jspecify.version>1.0.0</jspecify.version>

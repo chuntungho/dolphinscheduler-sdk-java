@@ -139,4 +139,27 @@ public class ProjectOperator extends AbstractOperator {
       throw new RuntimeException(e);
     }
   }
+
+  public List<TaskGroupResp> queryTaskGroup(Integer page, Integer size, String name) {
+    page = Optional.ofNullable(page).orElse(DolphinClientConstant.Page.DEFAULT_PAGE);
+    size = Optional.ofNullable(size).orElse(DolphinClientConstant.Page.DEFAULT_SIZE);
+
+    String url = dolphinAddress + "/task-group/list-paging";
+    Query query =
+        new Query()
+            .addParam("pageNo", String.valueOf(page))
+            .addParam("pageSize", String.valueOf(size))
+            .addParam("name", name)
+            .build();
+    try {
+      HttpRestResult<JsonNode> stringHttpRestResult =
+          dolphinsRestTemplate.get(url, getHeader(), query, JsonNode.class);
+      return JacksonUtils.parseObject(
+              stringHttpRestResult.getData().toString(),
+              new TypeReference<PageInfo<TaskGroupResp>>() {})
+          .getTotalList();
+    } catch (Exception e) {
+      throw new DolphinException("Failed to query task group", e);
+    }
+  }
 }
