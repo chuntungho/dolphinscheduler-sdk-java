@@ -3,7 +3,9 @@ package com.github.weaksloth.dolphins.remote;
 import com.google.common.base.Strings;
 import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,26 +55,29 @@ public class Header {
     return header.entrySet().iterator();
   }
 
-  public String getCharset() {
-    String acceptCharset = getValue(HttpHeaders.ACCEPT_CHARSET);
-    if (acceptCharset == null) {
+  public Charset getCharset() {
+    String charsetName = getValue(HttpHeaders.ACCEPT_CHARSET);
+    if (charsetName == null) {
       String contentType = getValue(HttpHeaders.CONTENT_TYPE);
-      acceptCharset =
+      charsetName =
           !Strings.isNullOrEmpty(contentType)
               ? analysisCharset(contentType)
               : StandardCharsets.UTF_8.displayName();
     }
-    return acceptCharset;
+
+    try {
+      return Charset.forName(charsetName);
+    } catch (UnsupportedCharsetException e) {
+      return StandardCharsets.UTF_8;
+    }
   }
 
   private String analysisCharset(String contentType) {
     String[] values = contentType.split(";");
     String charset = StandardCharsets.UTF_8.displayName();
-    if (values.length == 0) {
-      return charset;
-    }
     for (String value : values) {
-      if (value.startsWith("charset=")) {
+      value = value.trim();
+      if (value.toLowerCase().startsWith("charset=")) {
         charset = value.substring("charset=".length());
       }
     }

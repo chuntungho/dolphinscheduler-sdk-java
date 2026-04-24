@@ -65,7 +65,8 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
             params.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
           }
         }
-        HttpEntity entity = new UrlEncodedFormEntity(params);
+        // fix encoding issue
+        HttpEntity entity = new UrlEncodedFormEntity(params, headers.getCharset());
         method.setEntity(entity);
       }
     } else if (ContentType.MULTIPART_FORM_DATA
@@ -82,7 +83,9 @@ public class DefaultHttpClientRequest implements HttpClientRequest {
       if (form != null && !form.isEmpty()) {
 
         MultipartEntityBuilder entityBuilder =
-            MultipartEntityBuilder.create().setMode(HttpMultipartMode.EXTENDED);
+            MultipartEntityBuilder.create()
+                .setMode(HttpMultipartMode.EXTENDED)
+                .setCharset(headers.getCharset());
 
         for (Map.Entry<String, Object> entry : form.entrySet()) {
           if (entry.getValue() instanceof File) {

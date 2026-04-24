@@ -6,7 +6,7 @@
 
     <groupId>com.github.weaksloth</groupId>
     <artifactId>dolphinscheduler-sdk-java</artifactId>
-    <version>3.2.2.3-RC</version>
+    <version>3.2.2.4-RC</version>
 
     <properties>
         <lombok.version>1.18.22</lombok.version>
