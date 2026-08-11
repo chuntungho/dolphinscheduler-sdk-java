@@ -43,6 +43,8 @@ public class DataxTask extends AbstractTask {
 
   private Integer jobSpeedByte = 0;
   private Integer jobSpeedRecord = 1000;
+  private Integer jobChannel = 1;
+  private Integer batchSize = 1000;
   private List<String> preStatements;
   private List<String> postStatements;
   private Integer xms = 1;

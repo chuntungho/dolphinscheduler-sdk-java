@@ -3,7 +3,6 @@ package com.github.weaksloth.dolphins.workflow;
 import com.github.weaksloth.dolphins.BaseTest;
 import com.github.weaksloth.dolphins.enums.HttpCheckCondition;
 import com.github.weaksloth.dolphins.enums.HttpMethod;
-import com.github.weaksloth.dolphins.process.*;
 import com.github.weaksloth.dolphins.task.HttpTask;
 import com.github.weaksloth.dolphins.task.ShellTask;
 import com.github.weaksloth.dolphins.util.TaskDefinitionUtils;
@@ -15,7 +14,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** the test for workflow/process */
+/** the test for workflow definition */
 public class WorkflowTest extends BaseTest {
 
   public static final String WORKFLOW_NAME = "test-dag2";
@@ -31,14 +30,14 @@ public class WorkflowTest extends BaseTest {
    *
    * <p>4.create task relations
    *
-   * <p>5.create process create parm
+   * <p>5.create workflow define param
    *
    * <p>
    */
   @Test
-  public void testCreateProcessDefinition() {
+  public void testCreateWorkflowDefinition() {
 
-    List<Long> taskCodes = getClient().opsForProcess().generateTaskCode(projectCode, 2);
+    List<Long> taskCodes = getClient().opsForWorkflow().generateTaskCode(projectCode, 2);
 
     // build shell task
     ShellTask shellTask = new ShellTask();
@@ -57,47 +56,46 @@ public class WorkflowTest extends BaseTest {
     TaskDefinition httpTaskDefinition =
         TaskDefinitionUtils.createDefaultTaskDefinition(taskCodes.get(1), httpTask);
 
-    ProcessDefineParam pcr = new ProcessDefineParam();
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
     pcr.setName(WORKFLOW_NAME)
         .setLocations(TaskLocationUtils.horizontalLocation(taskCodes.toArray(new Long[0])))
         .setDescription("test-dag-description")
-        .setTenantCode(tenantCode)
         .setTimeout("0")
-        .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+        .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
         .setTaskDefinitionJson(Arrays.asList(shellTaskDefinition, httpTaskDefinition))
         .setTaskRelationJson(TaskRelationUtils.oneLineRelation(taskCodes.toArray(new Long[0])))
         .setGlobalParams(null);
 
-    System.out.println(getClient().opsForProcess().create(projectCode, pcr));
+    System.out.println(getClient().opsForWorkflow().create(projectCode, pcr));
   }
 
   @Test
   public void testPage() {
-    List<ProcessDefineResp> page =
-        getClient().opsForProcess().page(projectCode, null, null, WORKFLOW_NAME);
+    List<WorkflowDefineResp> page =
+        getClient().opsForWorkflow().page(projectCode, null, null, WORKFLOW_NAME);
     int expectedWorkflowNumber = 1;
     Assert.assertEquals(expectedWorkflowNumber, page.size());
   }
 
   @Test
   public void testOnlineWorkflow() {
-    List<ProcessDefineResp> page =
-        getClient().opsForProcess().page(projectCode, null, null, WORKFLOW_NAME);
-    Assert.assertTrue(getClient().opsForProcess().online(projectCode, page.get(0).getCode()));
+    List<WorkflowDefineResp> page =
+        getClient().opsForWorkflow().page(projectCode, null, null, WORKFLOW_NAME);
+    Assert.assertTrue(getClient().opsForWorkflow().online(projectCode, page.get(0).getCode()));
   }
 
   @Test
   public void testOfflineWorkflow() {
-    List<ProcessDefineResp> page =
-        getClient().opsForProcess().page(projectCode, null, null, WORKFLOW_NAME);
-    Assert.assertTrue(getClient().opsForProcess().offline(projectCode, page.get(0).getCode()));
+    List<WorkflowDefineResp> page =
+        getClient().opsForWorkflow().page(projectCode, null, null, WORKFLOW_NAME);
+    Assert.assertTrue(getClient().opsForWorkflow().offline(projectCode, page.get(0).getCode()));
   }
 
   /** the workflow must in offline state */
   @Test
   public void testDeleteWorkflow() {
-    List<ProcessDefineResp> page =
-        getClient().opsForProcess().page(projectCode, null, null, WORKFLOW_NAME);
-    Assert.assertTrue(getClient().opsForProcess().delete(projectCode, page.get(0).getCode()));
+    List<WorkflowDefineResp> page =
+        getClient().opsForWorkflow().page(projectCode, null, null, WORKFLOW_NAME);
+    Assert.assertTrue(getClient().opsForWorkflow().delete(projectCode, page.get(0).getCode()));
   }
 }

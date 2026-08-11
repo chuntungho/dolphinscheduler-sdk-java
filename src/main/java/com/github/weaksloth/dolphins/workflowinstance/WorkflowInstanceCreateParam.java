@@ -1,4 +1,4 @@
-package com.github.weaksloth.dolphins.instance;
+package com.github.weaksloth.dolphins.workflowinstance;
 
 import com.github.weaksloth.dolphins.enums.ExecutionOrder;
 import com.github.weaksloth.dolphins.enums.FailureStrategy;
@@ -8,22 +8,22 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.jspecify.annotations.NonNull;
 
-/** process instance create param */
+/** workflow instance create param */
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class ProcessInstanceCreateParam {
+public class WorkflowInstanceCreateParam {
 
   /** continue or end */
   @NonNull private FailureStrategy failureStrategy = FailureStrategy.END;
 
   // for batch only
-  private String processDefinitionCodes;
+  private String workflowDefinitionCodes;
 
   // for single
-  private Long processDefinitionCode;
+  private Long workflowDefinitionCode;
 
-  private String processInstancePriority;
+  private String workflowInstancePriority;
 
   private ExecutionOrder executionOrder = ExecutionOrder.ASC_ORDER;
   // map
@@ -53,6 +53,9 @@ public class ProcessInstanceCreateParam {
   private String startParams;
 
   private String taskDependType;
+
+  /** tenant code the workflow instance run with */
+  private String tenantCode = "default";
 
   /** worker group */
   private String workerGroup = "default";

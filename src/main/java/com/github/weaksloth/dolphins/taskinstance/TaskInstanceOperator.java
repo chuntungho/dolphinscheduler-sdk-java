@@ -28,11 +28,11 @@ public class TaskInstanceOperator extends AbstractOperator {
    * @param projectCode project code
    * @param page page
    * @param size size
-   * @param processInstanceId process instance id
+   * @param workflowInstanceId workflow instance id
    * @return list
    */
   public List<TaskInstanceQueryResp> page(
-      Long projectCode, Integer page, Integer size, Long processInstanceId) {
+      Long projectCode, Integer page, Integer size, Long workflowInstanceId) {
     page = Optional.ofNullable(page).orElse(DolphinClientConstant.Page.DEFAULT_PAGE);
     size = Optional.ofNullable(size).orElse(DolphinClientConstant.Page.DEFAULT_SIZE);
 
@@ -41,7 +41,7 @@ public class TaskInstanceOperator extends AbstractOperator {
         new Query()
             .addParam("pageNo", String.valueOf(page))
             .addParam("pageSize", String.valueOf(size))
-            .addParam("processInstanceId", String.valueOf(processInstanceId));
+            .addParam("workflowInstanceId", String.valueOf(workflowInstanceId));
 
     try {
       HttpRestResult<JsonNode> restResult =
@@ -57,24 +57,21 @@ public class TaskInstanceOperator extends AbstractOperator {
   }
 
   /**
-   * query task instance log
+   * query task instance log, api: /dolphinscheduler/log/detail
    *
-   * @param projectCode project code
    * @param skipLineNum skipLineNum
    * @param limit limit
    * @param taskInstanceId taskInstanceId
    * @return String
    */
-  public String queryLog(
-      Long projectCode, Integer skipLineNum, Integer limit, Long taskInstanceId) {
+  public String queryLog(Integer skipLineNum, Integer limit, Long taskInstanceId) {
     skipLineNum =
         Optional.ofNullable(skipLineNum).orElse(DolphinClientConstant.LogLimit.DEFAULT_SKIP);
     limit = Optional.ofNullable(limit).orElse(DolphinClientConstant.LogLimit.DEFAULT_LIMIT);
 
-    String url = dolphinAddress + "/log/" + projectCode + "/detail";
+    String url = dolphinAddress + "/log/detail";
     Query query =
         new Query()
-            .addParam("projectCode", String.valueOf(projectCode))
             .addParam("taskInstanceId", String.valueOf(taskInstanceId))
             .addParam("skipLineNum", String.valueOf(skipLineNum))
             .addParam("limit", String.valueOf(limit));

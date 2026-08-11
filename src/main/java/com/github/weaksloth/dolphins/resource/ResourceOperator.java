@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
-// TODO support upload file
 @Slf4j
 public class ResourceOperator extends AbstractOperator {
 
@@ -24,13 +23,16 @@ public class ResourceOperator extends AbstractOperator {
   }
 
   /**
-   * page query resource list
+   * page query resource list under the given directory
    *
-   * @param pid pid
-   * @param fileName file name
+   * @param page page
+   * @param size size
+   * @param fullName the absolute path of the directory, such as
+   *     file:/dolphinscheduler/default/resources
+   * @param fileName file name query criteria
    * @return {@link List <ResourceQueryRes>}
    */
-  public List<ResourceQueryRes> page(Integer page, Integer size, String pid, String fileName) {
+  public List<ResourceQueryRes> page(Integer page, Integer size, String fullName, String fileName) {
 
     page = Optional.ofNullable(page).orElse(DolphinClientConstant.Page.DEFAULT_PAGE);
     size = Optional.ofNullable(size).orElse(DolphinClientConstant.Page.DEFAULT_SIZE);
@@ -42,9 +44,7 @@ public class ResourceOperator extends AbstractOperator {
             .addParam("pageNo", String.valueOf(page))
             .addParam("pageSize", String.valueOf(size))
             .addParam("searchVal", fileName)
-            .addParam("fullName", "")
-            .addParam("tenantCode", "")
-            .addParam("id", pid);
+            .addParam("fullName", fullName);
     try {
       HttpRestResult<JsonNode> restResult =
           dolphinsRestTemplate.get(url, getHeader(), query, JsonNode.class);
@@ -58,10 +58,29 @@ public class ResourceOperator extends AbstractOperator {
   }
 
   /**
+   * query the base directory of the resource, the returned value is the root of every <code>
+   * fullName</code>/<code>currentDir</code> used by the other resource apis, such as
+   * file:/dolphinscheduler/default/resources
+   *
+   * @return the absolute path of the resource base directory
+   */
+  public String queryBaseDir() {
+    String url = dolphinAddress + "/resources/base-dir";
+    Query query = new Query().addParam("type", DolphinClientConstant.Resource.TYPE_FILE);
+    try {
+      HttpRestResult<String> restResult =
+          dolphinsRestTemplate.get(url, getHeader(), query, String.class);
+      return restResult.getData();
+    } catch (Exception e) {
+      throw new DolphinException("query dolphin scheduler resource base dir fail", e);
+    }
+  }
+
+  /**
    * upload resource
    *
    * @param resourceUploadParam upload file param
-   * @return resource info
+   * @return true for success,otherwise false
    */
   public Boolean upload(ResourceUploadParam resourceUploadParam) {
     String url = dolphinAddress + "/resources";
@@ -110,15 +129,14 @@ public class ResourceOperator extends AbstractOperator {
   }
 
   /**
-   * delete resource by id
+   * delete resource by its absolute path
    *
-   * @param tenantCode tenantCode
-   * @param fullName fullName
-   * @return
+   * @param fullName the absolute path of the resource
+   * @return true for success,otherwise false
    */
-  public Boolean delete(String tenantCode, String fullName) {
+  public Boolean delete(String fullName) {
     String url = dolphinAddress + "/resources";
-    Query query = new Query().addParam("tenantCode", tenantCode).addParam("fullName", fullName);
+    Query query = new Query().addParam("fullName", fullName);
     try {
       HttpRestResult<String> restResult =
           dolphinsRestTemplate.delete(url, getHeader(), query, String.class);

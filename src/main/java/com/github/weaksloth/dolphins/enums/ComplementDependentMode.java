@@ -3,7 +3,7 @@ package com.github.weaksloth.dolphins.enums;
 /** task node depend type */
 public enum ComplementDependentMode {
 
-  /** 0 off mode 1 run complement data with all dependent process */
+  /** 0 off mode 1 run complement data with all dependent workflow */
   OFF_MODE(0, "off mode"),
   ALL_DEPENDENT(1, "all dependent");
 

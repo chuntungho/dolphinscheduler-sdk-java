@@ -19,12 +19,11 @@ package com.github.weaksloth.dolphins.taskinstance;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.weaksloth.dolphins.instance.ProcessInstanceQueryResp;
-import com.github.weaksloth.dolphins.process.ProcessDefineResp;
-import com.github.weaksloth.dolphins.process.TaskDefinition;
+import com.github.weaksloth.dolphins.workflow.TaskDefinition;
+import com.github.weaksloth.dolphins.workflow.WorkflowDefineResp;
+import com.github.weaksloth.dolphins.workflowinstance.WorkflowInstanceQueryResp;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -43,9 +42,11 @@ public class TaskInstanceQueryResp implements Serializable {
   /** task type */
   private String taskType;
 
-  private int processInstanceId;
+  /** workflow instance id */
+  private int workflowInstanceId;
 
-  private String processInstanceName;
+  /** workflow instance name */
+  private String workflowInstanceName;
 
   private Long projectCode;
 
@@ -53,9 +54,10 @@ public class TaskInstanceQueryResp implements Serializable {
 
   private int taskDefinitionVersion;
 
+  /** dolphin scheduler 3.4.2 still serializes this field with its legacy name */
   private String processDefinitionName;
 
-  /** process instance name */
+  /** task group priority */
   private int taskGroupPriority;
 
   /** state */
@@ -82,11 +84,11 @@ public class TaskInstanceQueryResp implements Serializable {
 
   /**
    * task shell execute path and the resource down from hdfs default path:
-   * $base_run_dir/processInstanceId/taskInstanceId/retryTimes
+   * $base_run_dir/workflowInstanceId/taskInstanceId/retryTimes
    */
   private String executePath;
 
-  /** task log path default path: $base_run_dir/processInstanceId/taskInstanceId/retryTimes */
+  /** task log path default path: $base_run_dir/workflowInstanceId/taskInstanceId/retryTimes */
   private String logPath;
 
   /** retry times */
@@ -95,11 +97,11 @@ public class TaskInstanceQueryResp implements Serializable {
   /** alert flag */
   private String alertFlag;
 
-  /** process instance */
-  private ProcessInstanceQueryResp processInstance;
+  /** workflow instance */
+  private WorkflowInstanceQueryResp workflowInstance;
 
-  /** process definition */
-  private ProcessDefineResp processDefine;
+  /** workflow definition */
+  private WorkflowDefineResp workflowDefinition;
 
   /** task definition */
   private TaskDefinition taskDefine;
@@ -113,18 +115,6 @@ public class TaskInstanceQueryResp implements Serializable {
   /** flag */
   private String flag;
 
-  /** task is cache: yes/no */
-  private String isCache;
-
-  /** cache_key */
-  private String cacheKey;
-
-  /** dependency */
-  private String dependency;
-
-  /** switch dependency */
-  private String switchDependency;
-
   /** duration */
   private String duration;
 
@@ -134,14 +124,11 @@ public class TaskInstanceQueryResp implements Serializable {
   /** task retry interval, unit: minute */
   private int retryInterval;
 
-  /** task intance priority */
+  /** task instance priority */
   private String taskInstancePriority;
 
-  /** process intance priority */
-  private String processInstancePriority;
-
-  /** dependent state */
-  private String dependentResult;
+  /** workflow instance priority */
+  private String workflowInstancePriority;
 
   /** workerGroup */
   private String workerGroup;
@@ -160,8 +147,6 @@ public class TaskInstanceQueryResp implements Serializable {
 
   private String executorName;
 
-  private Map<String, String> resources;
-
   /** delay execution time. */
   private int delayTime;
 
@@ -170,6 +155,7 @@ public class TaskInstanceQueryResp implements Serializable {
 
   /** dry run flag */
   private int dryRun;
+
   /** task group id */
   private int taskGroupId;
 
@@ -181,7 +167,4 @@ public class TaskInstanceQueryResp implements Serializable {
 
   /** task execute type */
   private String taskExecuteType;
-
-  /** test flag */
-  private int testFlag;
 }

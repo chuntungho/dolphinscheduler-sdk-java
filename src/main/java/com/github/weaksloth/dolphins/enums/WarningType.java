@@ -6,18 +6,17 @@ import com.google.common.base.Functions;
 import java.util.Arrays;
 import java.util.Map;
 
-/** types for whether to send warning when process ends; */
+/** types for whether to send warning when workflow instance ends; */
 public enum WarningType {
 
   /**
-   * 0 do not send warning; 1 send if process success; 2 send if process failed; 3 send if process
-   * ends, whatever the result; 4 send global events;
+   * 0 do not send warning; 1 send if workflow success; 2 send if workflow failed; 3 send if
+   * workflow ends, whatever the result;
    */
   NONE(0, "none"),
   SUCCESS(1, "success"),
   FAILURE(2, "failure"),
-  ALL(3, "all"),
-  GLOBAL(4, "global");
+  ALL(3, "all");
 
   WarningType(int code, String descp) {
     this.code = code;

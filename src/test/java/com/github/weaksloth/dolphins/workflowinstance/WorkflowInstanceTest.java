@@ -1,22 +1,21 @@
-package com.github.weaksloth.dolphins.insatnce;
+package com.github.weaksloth.dolphins.workflowinstance;
 
 import com.github.weaksloth.dolphins.BaseTest;
 import com.github.weaksloth.dolphins.enums.*;
-import com.github.weaksloth.dolphins.instance.ProcessInstanceCreateParam;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ProcessInstanceTest extends BaseTest {
+public class WorkflowInstanceTest extends BaseTest {
 
-  public static final Long PROCESS_DEFINITION_CODE = 11386905142912L;
+  public static final Long WORKFLOW_DEFINITION_CODE = 11386905142912L;
 
   /** the workflow must in online state,otherwise will cause error */
   @Test
   public void testStartInstance() {
 
-    ProcessInstanceCreateParam startParam = new ProcessInstanceCreateParam();
+    WorkflowInstanceCreateParam startParam = new WorkflowInstanceCreateParam();
     startParam
-        .setProcessDefinitionCode(PROCESS_DEFINITION_CODE)
+        .setWorkflowDefinitionCode(WORKFLOW_DEFINITION_CODE)
         .setScheduleTime("")
         .setFailureStrategy(FailureStrategy.CONTINUE)
         .setWarningType(WarningType.NONE)
@@ -25,32 +24,32 @@ public class ProcessInstanceTest extends BaseTest {
         .setStartNodeList("")
         .setTaskDependType(TaskDependType.TASK_POST.toString())
         .setRunMode(RunMode.RUN_MODE_SERIAL.toString())
-        .setProcessInstancePriority(Priority.MEDIUM.toString())
+        .setWorkflowInstancePriority(Priority.MEDIUM.toString())
         .setWorkerGroup("default")
         .setEnvironmentCode("")
         .setStartParams("")
         .setExpectedParallelismNumber("")
         .setDryRun(0);
-    Assert.assertTrue(getClient().opsForProcessInst().start(projectCode, startParam));
+    Assert.assertTrue(getClient().opsForWorkflowInstance().start(projectCode, startParam));
   }
 
   @Test
   public void testReRun() {
     Long instanceId = 31L;
-    Assert.assertTrue(getClient().opsForProcessInst().reRun(projectCode, instanceId));
+    Assert.assertTrue(getClient().opsForWorkflowInstance().reRun(projectCode, instanceId));
   }
 
   @Test
   public void testPage() {
     getClient()
-        .opsForProcessInst()
-        .page(null, null, projectCode, PROCESS_DEFINITION_CODE)
+        .opsForWorkflowInstance()
+        .page(null, null, projectCode, WORKFLOW_DEFINITION_CODE)
         .forEach(System.out::println);
   }
 
   @Test
   public void testDelete() {
     Long instanceId = 31L;
-    Assert.assertTrue(getClient().opsForProcessInst().delete(projectCode, instanceId));
+    Assert.assertTrue(getClient().opsForWorkflowInstance().delete(projectCode, instanceId));
   }
 }

@@ -11,9 +11,11 @@ public class ResourceUploadParam {
 
   private String type = DolphinClientConstant.Resource.TYPE_FILE;
 
-  private String currentDir = DolphinClientConstant.Resource.DEFAULT_CURRENT_DIR;
-
-  private String description;
+  /**
+   * the absolute path of the parent directory, such as file:/dolphinscheduler/default/resources,
+   * see {@link ResourceOperator#queryBaseDir()}
+   */
+  private String currentDir;
 
   private File file;
 

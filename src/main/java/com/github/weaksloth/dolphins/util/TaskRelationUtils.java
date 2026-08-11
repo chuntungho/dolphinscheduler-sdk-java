@@ -1,6 +1,6 @@
 package com.github.weaksloth.dolphins.util;
 
-import com.github.weaksloth.dolphins.process.TaskRelation;
+import com.github.weaksloth.dolphins.workflow.TaskRelation;
 import java.util.ArrayList;
 import java.util.List;
 

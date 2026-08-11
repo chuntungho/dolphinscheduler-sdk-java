@@ -7,25 +7,23 @@ import java.util.Map;
 public enum CommandType {
 
   /**
-   * command types 0 start a new process 1 start a new process from current nodes 2 recover
-   * tolerance fault process 3 recover suspended process 4 start process from failure task nodes 5
-   * complement data 6 start a new process from scheduler 7 repeat running a process 8 pause a
-   * process 9 stop a process 10 recover waiting thread 11 recover serial wait 12 start a task node
-   * in a process instance
+   * command types 0 start a new workflow 1 start a new workflow from current nodes 2 recover
+   * tolerance fault workflow 3 recover suspended workflow 4 start workflow from failure task nodes
+   * 5 complement data 6 start a new workflow from scheduler 7 repeat running a workflow 8 pause a
+   * workflow 9 stop a workflow 11 recover serial wait 12 start a task node in a workflow instance
    */
-  START_PROCESS(0, "start a new process"),
-  START_CURRENT_TASK_PROCESS(1, "start a new process from current nodes"),
-  RECOVER_TOLERANCE_FAULT_PROCESS(2, "recover tolerance fault process"),
-  RECOVER_SUSPENDED_PROCESS(3, "recover suspended process"),
-  START_FAILURE_TASK_PROCESS(4, "start process from failure task nodes"),
+  START_PROCESS(0, "start a new workflow"),
+  START_CURRENT_TASK_PROCESS(1, "start a new workflow from current nodes"),
+  RECOVER_TOLERANCE_FAULT_PROCESS(2, "recover fault tolerance workflow instance"),
+  RECOVER_SUSPENDED_PROCESS(3, "recover suspended workflow instance"),
+  START_FAILURE_TASK_PROCESS(4, "recover workflow instance from failure tasks"),
   COMPLEMENT_DATA(5, "complement data"),
-  SCHEDULER(6, "start a new process from scheduler"),
-  REPEAT_RUNNING(7, "repeat running a process"),
-  PAUSE(8, "pause a process"),
-  STOP(9, "stop a process"),
-  RECOVER_WAITING_THREAD(10, "recover waiting thread"),
+  SCHEDULER(6, "start a new workflow from scheduler"),
+  REPEAT_RUNNING(7, "repeat running a workflow"),
+  PAUSE(8, "pause a workflow"),
+  STOP(9, "stop a workflow"),
   RECOVER_SERIAL_WAIT(11, "recover serial wait"),
-  EXECUTE_TASK(12, "start a task node in a process instance"),
+  EXECUTE_TASK(12, "start a task node in a workflow instance"),
   DYNAMIC_GENERATION(13, "dynamic generation"),
   ;
 

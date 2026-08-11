@@ -1,31 +1,39 @@
-package com.github.weaksloth.dolphins.instance;
+package com.github.weaksloth.dolphins.workflowinstance;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.weaksloth.dolphins.process.ProcessDefineResp;
+import com.github.weaksloth.dolphins.workflow.WorkflowDefineResp;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-/** copied from org.apache.dolphinscheduler.dao.entity.ProcessInstance */
+/** copied from org.apache.dolphinscheduler.dao.entity.WorkflowInstance */
 @Data
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProcessInstanceQueryResp {
+public class WorkflowInstanceQueryResp {
 
   /** id */
   private int id;
 
-  /** process definition code */
-  private Long processDefinitionCode;
+  /** workflow definition code */
+  private Long workflowDefinitionCode;
 
-  /** process definition version */
-  private int processDefinitionVersion;
+  /** workflow definition version */
+  private int workflowDefinitionVersion;
 
-  /** process state */
+  /** project code */
+  private Long projectCode;
+
+  /** workflow instance state */
   private String state;
+
+  /** workflow instance state history */
+  private String stateHistory;
+
   /** recovery flag for failover */
   private String recovery;
+
   /** start time */
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date startTime;
@@ -43,9 +51,10 @@ public class ProcessInstanceQueryResp {
   /** host */
   private String host;
 
-  /** process definition structure */
-  private ProcessDefineResp processDefinition;
-  /** process command type */
+  /** workflow definition structure */
+  private WorkflowDefineResp workflowDefinition;
+
+  /** workflow command type */
   private String commandType;
 
   /** command parameters */
@@ -89,8 +98,8 @@ public class ProcessInstanceQueryResp {
   /** queue */
   private String queue;
 
-  /** process is sub process */
-  private String isSubProcess;
+  /** workflow instance is sub workflow */
+  private String isSubWorkflow;
 
   /** task locations for web */
   private String locations;
@@ -98,18 +107,14 @@ public class ProcessInstanceQueryResp {
   /** history command */
   private String historyCmd;
 
-  /** depend processes schedule time */
+  /** depend workflow schedule times */
   private String dependenceScheduleTimes;
 
-  /**
-   * process duration
-   *
-   * @return
-   */
+  /** workflow instance duration */
   private String duration;
 
-  /** process instance priority */
-  private String processInstancePriority;
+  /** workflow instance priority */
+  private String workflowInstancePriority;
 
   /** worker group */
   private String workerGroup;
@@ -117,14 +122,14 @@ public class ProcessInstanceQueryResp {
   /** environment code */
   private Long environmentCode;
 
-  /** process timeout for warning */
+  /** workflow timeout for warning */
   private int timeout;
-
-  /** tenant id */
-  private int tenantId;
 
   /** varPool string */
   private String varPool;
+
+  /** next workflow instance id */
+  private int nextWorkflowInstanceId;
 
   /** dry run flag */
   private int dryRun;

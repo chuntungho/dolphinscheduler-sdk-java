@@ -1,6 +1,6 @@
 package com.github.weaksloth.dolphins.task;
 
-import com.github.weaksloth.dolphins.process.Parameter;
+import com.github.weaksloth.dolphins.workflow.Parameter;
 import java.util.Collections;
 import java.util.List;
 import lombok.Data;
@@ -31,7 +31,7 @@ public class SparkTask extends AbstractTask {
   private String others;
 
   /** yarn queue */
-  private String queue;
+  private String yarnQueue;
 
   /** optional value:JAVA,SCALA,PYTHON,SQL */
   private String programType;
@@ -39,16 +39,15 @@ public class SparkTask extends AbstractTask {
   /** spark sql script if programType is SQL */
   private String rawScript;
 
-  /** optional value:SPARK2,SPARK1 */
-  private String sparkVersion;
+  /** k8s namespace, only used when the task runs on k8s */
+  private String namespace;
+
+  /** sql execution type, only used when programType is SQL */
+  private String sqlExecutionType;
 
   private List<Parameter> localParams = Collections.emptyList();
 
   private List<TaskResource> resourceList = Collections.emptyList();
-
-  public static SparkTask newV2Instance() {
-    return new SparkTask().setSparkVersion("SPARK2");
-  }
 
   public SparkTask inClientMode() {
     this.deployMode = "client";

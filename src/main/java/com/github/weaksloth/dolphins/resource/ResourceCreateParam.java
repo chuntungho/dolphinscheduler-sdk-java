@@ -11,15 +11,15 @@ public class ResourceCreateParam {
 
   private String type = DolphinClientConstant.Resource.TYPE_FILE;
 
-  private String pid = DolphinClientConstant.Resource.DEFAULT_PID_FILE;
-
-  private String currentDir = DolphinClientConstant.Resource.DEFAULT_CURRENT_DIR;
+  /**
+   * the absolute path of the parent directory, such as file:/dolphinscheduler/default/resources,
+   * see {@link ResourceOperator#queryBaseDir()}
+   */
+  private String currentDir;
 
   private String fileName;
 
   private String suffix;
-
-  private String description;
 
   private String content;
 }

@@ -1,4 +1,4 @@
-package com.github.weaksloth.dolphins.process;
+package com.github.weaksloth.dolphins.workflow;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.weaksloth.dolphins.remote.RequestHttpEntity;

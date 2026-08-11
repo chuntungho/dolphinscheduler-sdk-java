@@ -24,12 +24,12 @@ public class DolphinClientConstant {
 
   public static class HttpTask {
     public static final String HTTP_PARAMETER_TYPE_PARAMETER = "PARAMETER";
-    public static final String HTTP_PARAMETER_TYPE_BODY = "BODY";
     public static final String HTTP_PARAMETER_TYPE_HEADERS = "HEADERS";
 
     public static final String HTTP_METHOD_GET = "GET";
     public static final String HTTP_METHOD_POST = "POST";
     public static final String HTTP_METHOD_PUT = "PUT";
+    public static final String HTTP_METHOD_DELETE = "DELETE";
   }
 
   public static class TaskType {
@@ -37,12 +37,11 @@ public class DolphinClientConstant {
     public static final String HTTP = "HTTP";
     public static final String CONDITION = "CONDITIONS";
     public static final String SHELL = "SHELL";
+    public static final String SUB_WORKFLOW = "SUB_WORKFLOW";
   }
 
   public static class Resource {
     public static final String TYPE_FILE = "FILE";
-    public static final String TYPE_UDF = "UDF";
-    public static final String DEFAULT_PID_FILE = "-1";
-    public static final String DEFAULT_CURRENT_DIR = "/";
+    public static final String TYPE_ALL = "ALL";
   }
 }

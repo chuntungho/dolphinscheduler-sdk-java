@@ -49,16 +49,16 @@ public class ScheduleOperator extends AbstractOperator {
    * get schedule by workflow
    *
    * @param projectCode project's code
-   * @param processDefinitionCode workflow code
+   * @param workflowDefinitionCode workflow definition code
    * @return {@link List<ScheduleInfoResp>}
    */
-  public List<ScheduleInfoResp> getByWorkflowCode(Long projectCode, Long processDefinitionCode) {
+  public List<ScheduleInfoResp> getByWorkflowCode(Long projectCode, Long workflowDefinitionCode) {
     String url = dolphinAddress + "/projects/" + projectCode + "/schedules";
     Query query =
         new Query()
             .addParam("pageNo", "1")
             .addParam("pageSize", "10")
-            .addParam("processDefinitionCode", String.valueOf(processDefinitionCode));
+            .addParam("workflowDefinitionCode", String.valueOf(workflowDefinitionCode));
     try {
       HttpRestResult<JsonNode> stringHttpRestResult =
           dolphinsRestTemplate.get(url, getHeader(), query, JsonNode.class);

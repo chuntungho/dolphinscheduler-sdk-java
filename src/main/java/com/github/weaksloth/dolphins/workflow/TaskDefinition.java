@@ -1,4 +1,4 @@
-package com.github.weaksloth.dolphins.process;
+package com.github.weaksloth.dolphins.workflow;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -59,9 +59,6 @@ public class TaskDefinition {
 
   private Long memoryMax = -1L;
 
-  /** YES, NO * */
-  private String isCache = "NO";
-
   private Integer taskGroupId;
 
   // convert from json
@@ -78,8 +75,8 @@ public class TaskDefinition {
         case "SQL":
           type = SqlTask.class;
           break;
-        case "SUB_PROCESS":
-          type = SubProcessTask.class;
+        case "SUB_WORKFLOW":
+          type = SubWorkflowTask.class;
           break;
       }
       taskParams = JacksonUtils.convert(taskParamsMap, type);

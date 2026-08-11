@@ -11,8 +11,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class ResourceUpdateParam {
 
-  private String tenantCode;
-
+  /** the absolute path of the resource */
   private String fullName;
 
   private String content;

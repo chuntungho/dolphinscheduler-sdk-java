@@ -3,11 +3,11 @@ package com.github.weaksloth.dolphins.task;
 import com.github.weaksloth.dolphins.BaseTest;
 import com.github.weaksloth.dolphins.enums.HttpCheckCondition;
 import com.github.weaksloth.dolphins.enums.HttpMethod;
-import com.github.weaksloth.dolphins.process.*;
 import com.github.weaksloth.dolphins.util.TaskDefinitionUtils;
 import com.github.weaksloth.dolphins.util.TaskLocationUtils;
 import com.github.weaksloth.dolphins.util.TaskRelationUtils;
 import com.github.weaksloth.dolphins.util.TaskUtils;
+import com.github.weaksloth.dolphins.workflow.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +18,7 @@ public class TaskTest extends BaseTest {
 
   @Test
   public void testShellTask() {
-    Long taskCode = getClient().opsForProcess().generateTaskCode(projectCode, 1).get(0);
+    Long taskCode = getClient().opsForWorkflow().generateTaskCode(projectCode, 1).get(0);
     ShellTask shellTask = new ShellTask();
     shellTask.setRawScript("echo 'hello dolphin scheduler java sdk'");
 
@@ -31,7 +31,7 @@ public class TaskTest extends BaseTest {
 
   @Test
   public void testHttpTask() {
-    Long taskCode = getClient().opsForProcess().generateTaskCode(projectCode, 1).get(0);
+    Long taskCode = getClient().opsForWorkflow().generateTaskCode(projectCode, 1).get(0);
 
     HttpTask httpTask = new HttpTask();
     httpTask
@@ -51,7 +51,7 @@ public class TaskTest extends BaseTest {
   /** run this test before creating datasource and then set its id to SqlTask */
   @Test
   public void testSqlTask() {
-    Long taskCode = getClient().opsForProcess().generateTaskCode(projectCode, 1).get(0);
+    Long taskCode = getClient().opsForWorkflow().generateTaskCode(projectCode, 1).get(0);
 
     SqlTask sqlTask = new SqlTask();
     sqlTask
@@ -75,7 +75,7 @@ public class TaskTest extends BaseTest {
 
   @Test
   public void testPythonTask() {
-    Long taskCode = getClient().opsForProcess().generateTaskCode(projectCode, 1).get(0);
+    Long taskCode = getClient().opsForWorkflow().generateTaskCode(projectCode, 1).get(0);
     PythonTask pythonTask = new PythonTask();
     pythonTask.setRawScript("print('hello dolphin scheduler sdk.')");
 
@@ -88,7 +88,7 @@ public class TaskTest extends BaseTest {
 
   @Test
   public void testConditionTask() {
-    List<Long> taskCodes = getClient().opsForProcess().generateTaskCode(projectCode, 4);
+    List<Long> taskCodes = getClient().opsForWorkflow().generateTaskCode(projectCode, 4);
 
     // -------------building task------------------
     // shell task
@@ -141,13 +141,12 @@ public class TaskTest extends BaseTest {
     TaskLocation tl3 = new TaskLocation(successTaskCode, 800, 240);
     TaskLocation tl4 = new TaskLocation(failTaskCode, 800, 440);
 
-    ProcessDefineParam pcr = new ProcessDefineParam();
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
     pcr.setName("condition-dag")
         .setLocations(Arrays.asList(tl1, tl2, tl3, tl4))
         .setDescription("test for use condition dag")
-        .setTenantCode(tenantCode)
         .setTimeout("0")
-        .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+        .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
         .setTaskDefinitionJson(
             Arrays.asList(
                 shellTaskDefinition,
@@ -157,34 +156,33 @@ public class TaskTest extends BaseTest {
         .setTaskRelationJson(Arrays.asList(r1, r2, r3, r4))
         .setGlobalParams(null);
 
-    ProcessDefineResp resp = getClient().opsForProcess().create(projectCode, pcr);
+    WorkflowDefineResp resp = getClient().opsForWorkflow().create(projectCode, pcr);
     System.out.println(resp);
     Assert.assertEquals("condition-dag", resp.getName());
   }
 
   private void submit(
-      Long taskCode, TaskDefinition taskDefinition, String processName, String description) {
-    ProcessDefineParam pcr = new ProcessDefineParam();
-    pcr.setName(processName)
+      Long taskCode, TaskDefinition taskDefinition, String workflowName, String description) {
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
+    pcr.setName(workflowName)
         .setLocations(TaskLocationUtils.verticalLocation(taskCode))
         .setDescription(description)
-        .setTenantCode(tenantCode)
         .setTimeout("0")
-        .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+        .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
         .setTaskDefinitionJson(Collections.singletonList(taskDefinition))
         .setTaskRelationJson(TaskRelationUtils.oneLineRelation(taskCode))
         .setGlobalParams(null);
 
-    ProcessDefineResp resp = getClient().opsForProcess().create(projectCode, pcr);
+    WorkflowDefineResp resp = getClient().opsForWorkflow().create(projectCode, pcr);
     System.out.println(resp);
-    Assert.assertEquals(processName, resp.getName());
+    Assert.assertEquals(workflowName, resp.getName());
   }
 
   @Test
   public void testGenerateTaskCode() {
     int expectedCodeNumber = 10;
     List<Long> taskCodes =
-        super.getClient().opsForProcess().generateTaskCode(projectCode, expectedCodeNumber);
+        super.getClient().opsForWorkflow().generateTaskCode(projectCode, expectedCodeNumber);
     Assert.assertEquals(expectedCodeNumber, taskCodes.size());
   }
 }

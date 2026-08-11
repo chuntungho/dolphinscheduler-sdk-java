@@ -14,11 +14,11 @@ public class ScheduleInfoResp {
 
   private int id;
 
-  /** process definition code */
-  private long processDefinitionCode;
+  /** workflow definition code */
+  private long workflowDefinitionCode;
 
-  /** process definition name */
-  private String processDefinitionName;
+  /** workflow definition name */
+  private String workflowDefinitionName;
 
   /** project name */
   private String projectName;
@@ -70,12 +70,18 @@ public class ScheduleInfoResp {
   /** warning group id */
   private int warningGroupId;
 
-  /** process instance priority */
-  private String processInstancePriority;
+  /** workflow instance priority */
+  private String workflowInstancePriority;
 
   /** worker group */
   private String workerGroup;
 
+  /** tenant code */
+  private String tenantCode;
+
   /** environment code */
   private Long environmentCode;
+
+  /** environment name */
+  private String environmentName;
 }

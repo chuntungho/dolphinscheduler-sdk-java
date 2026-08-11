@@ -14,7 +14,7 @@ public class ScheduleTest extends BaseTest {
   public void testCreate() {
     ScheduleDefineParam scheduleDefineParam = new ScheduleDefineParam();
     scheduleDefineParam
-        .setProcessDefinitionCode(WORKFLOW_CODE)
+        .setWorkflowDefinitionCode(WORKFLOW_CODE)
         .setSchedule(
             new ScheduleDefineParam.Schedule()
                 .setStartTime("2023-10-27 00:00:00")

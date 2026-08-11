@@ -1,14 +1,14 @@
 package com.github.weaksloth.dolphins.core;
 
 import com.github.weaksloth.dolphins.datasource.DataSourceOperator;
-import com.github.weaksloth.dolphins.instance.ProcessInstanceOperator;
-import com.github.weaksloth.dolphins.process.ProcessOperator;
 import com.github.weaksloth.dolphins.project.ProjectOperator;
 import com.github.weaksloth.dolphins.remote.DolphinsRestTemplate;
 import com.github.weaksloth.dolphins.resource.ResourceOperator;
 import com.github.weaksloth.dolphins.schedule.ScheduleOperator;
 import com.github.weaksloth.dolphins.taskinstance.TaskInstanceOperator;
 import com.github.weaksloth.dolphins.tenant.TenantOperator;
+import com.github.weaksloth.dolphins.workflow.WorkflowOperator;
+import com.github.weaksloth.dolphins.workflowinstance.WorkflowInstanceOperator;
 import lombok.extern.slf4j.Slf4j;
 
 /** dolphin scheduler client to operate dolphin scheduler */
@@ -21,8 +21,8 @@ public class DolphinClient {
 
   private DataSourceOperator dataSourceOperator;
   private ResourceOperator resourceOperator;
-  private ProcessOperator processOperator;
-  private ProcessInstanceOperator processInstanceOperator;
+  private WorkflowOperator workflowOperator;
+  private WorkflowInstanceOperator workflowInstanceOperator;
   private ScheduleOperator scheduleOperator;
   private ProjectOperator projectOperator;
   private TenantOperator tenantOperator;
@@ -41,10 +41,10 @@ public class DolphinClient {
         new DataSourceOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
     this.resourceOperator =
         new ResourceOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
-    this.processOperator =
-        new ProcessOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
-    this.processInstanceOperator =
-        new ProcessInstanceOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
+    this.workflowOperator =
+        new WorkflowOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
+    this.workflowInstanceOperator =
+        new WorkflowInstanceOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
     this.scheduleOperator =
         new ScheduleOperator(this.dolphinAddress, this.token, this.dolphinsRestTemplate);
     this.projectOperator =
@@ -63,12 +63,30 @@ public class DolphinClient {
     return this.resourceOperator;
   }
 
-  public ProcessOperator opsForProcess() {
-    return this.processOperator;
+  public WorkflowOperator opsForWorkflow() {
+    return this.workflowOperator;
   }
 
-  public ProcessInstanceOperator opsForProcessInst() {
-    return this.processInstanceOperator;
+  /**
+   * @deprecated dolphin scheduler renamed process definition to workflow definition since 3.3.0,
+   *     use {@link #opsForWorkflow()} instead
+   */
+  @Deprecated
+  public WorkflowOperator opsForProcess() {
+    return this.workflowOperator;
+  }
+
+  public WorkflowInstanceOperator opsForWorkflowInstance() {
+    return this.workflowInstanceOperator;
+  }
+
+  /**
+   * @deprecated dolphin scheduler renamed process instance to workflow instance since 3.3.0, use
+   *     {@link #opsForWorkflowInstance()} instead
+   */
+  @Deprecated
+  public WorkflowInstanceOperator opsForProcessInst() {
+    return this.workflowInstanceOperator;
   }
 
   public ScheduleOperator opsForSchedule() {

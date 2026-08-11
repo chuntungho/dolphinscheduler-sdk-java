@@ -37,9 +37,9 @@ public class ProjectInfoResp {
   /** permission */
   private int perm;
 
-  /** process define count */
+  /** workflow definition count */
   private int defCount;
 
-  /** process instance running count */
+  /** running workflow instance count */
   private int instRunningCount;
 }

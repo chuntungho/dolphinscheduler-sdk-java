@@ -16,11 +16,13 @@
 
 ## 2.2 多版本支持
 
-随着dolphin scheduler的不断发展，rest api很可能会发生变化，所以我目前支持了dolphin scheduler`2.0.5`,`3.1.4`,`3.2.0`版本。如果你使用的是其他版本，可以考虑自行做修改，一般来说改动量不大
+随着dolphin scheduler的不断发展，rest api很可能会发生变化，所以我目前支持了dolphin scheduler`2.0.5`,`3.1.4`,`3.2.0`,`3.2.2`,`3.4.2`版本。如果你使用的是其他版本，可以考虑自行做修改，一般来说改动量不大
 
 * `2.0.5-release` in branch `2.0.5-release`
 * `3.1.4-release` in branch `3.1.4-release`
 * `3.2.0-release` in branch `3.2.0-release`
+* `3.2.2-release` in branch `3.2.2-beta`
+* `3.4.2-release` 对应当前 master 分支
 
 ## 2.3 支持的操作
 
@@ -35,6 +37,33 @@
 | 告警       | 创建告警插件，列出告警插件                                   |
 | 租户       | 创建租户，更新租户，删除租户，列出租户                             |
 | 任务实例    | 列出任务实例，查询任务实例日志 |
+
+## 2.4 从3.2.x升级到3.4.2
+
+dolphin scheduler从3.3.0开始把`process`重命名为`workflow`，rest api的路径、参数和返回值都发生了变化，所以本sdk做了同样的调整，升级时需要修改以下内容：
+
+| 3.2.x                                              | 3.4.2                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| `dolphinClient.opsForProcess()`                    | `dolphinClient.opsForWorkflow()`                             |
+| `dolphinClient.opsForProcessInst()`                | `dolphinClient.opsForWorkflowInstance()`                     |
+| `com.github.weaksloth.dolphins.process`包          | `com.github.weaksloth.dolphins.workflow`包                   |
+| `com.github.weaksloth.dolphins.instance`包         | `com.github.weaksloth.dolphins.workflowinstance`包           |
+| `ProcessDefineParam`/`ProcessDefineResp`           | `WorkflowDefineParam`/`WorkflowDefineResp`                   |
+| `ProcessReleaseParam`                              | `WorkflowReleaseParam`                                       |
+| `ProcessInstanceCreateParam`/`ProcessInstanceQueryResp` | `WorkflowInstanceCreateParam`/`WorkflowInstanceQueryResp` |
+| `SubProcessTask`                                   | `SubWorkflowTask`(任务类型为`SUB_WORKFLOW`)                  |
+| `ProcessExecutionTypeEnum`                         | `WorkflowExecutionTypeEnum`                                  |
+| `xxx.setProcessDefinitionCode()`                   | `xxx.setWorkflowDefinitionCode()`                            |
+| `xxx.setProcessInstancePriority()`                 | `xxx.setWorkflowInstancePriority()`                          |
+
+其他不兼容的变更：
+
+* 工作流定义不再有租户，`WorkflowDefineParam`去掉了`tenantCode`，租户在运行工作流实例(`WorkflowInstanceCreateParam`)和定时(`ScheduleDefineParam`)时指定
+* 3.4.2的rest api已经移除了工作流的导入接口，所以`importWorkflow()`被删除
+* 资源中心的接口使用文件的绝对路径，不再使用`id`和`tenantCode`：`opsForResource().page(page, size, fullName, fileName)`、`opsForResource().delete(fullName)`，可以使用`opsForResource().queryBaseDir()`获取资源的根目录
+* 查询任务实例日志不再需要项目编号：`opsForTaskInstance().queryLog(skipLineNum, limit, taskInstanceId)`
+* http任务的请求体使用`httpBody`字段，`HttpParametersType`不再有`BODY`
+* 与dolphin scheduler保持一致，删除了`UdfType`,`ResUploadType`,`AuditResourceType`等枚举，新增了`AuditModelType`,`StorageType`,`WorkerGroupSource`
 
 # 3 使用指南
 
@@ -131,7 +160,7 @@ DolphinClient dolphinClient = new DolphinClient(token,dolphinAddress,restTemplat
 ```java
   @Test
   public void testShellTask() {
-    Long taskCode = getClient().opsForProcess().generateTaskCode(projectCode, 1).get(0);
+    Long taskCode = getClient().opsForWorkflow().generateTaskCode(projectCode, 1).get(0);
     ShellTask shellTask = new ShellTask();
     shellTask.setRawScript("echo 'hello dolphin scheduler java sdk'");
 
@@ -144,21 +173,20 @@ DolphinClient dolphinClient = new DolphinClient(token,dolphinAddress,restTemplat
 
 
   private void submit(
-      Long taskCode, TaskDefinition taskDefinition, String processName, String description) {
-    ProcessDefineParam pcr = new ProcessDefineParam();
-    pcr.setName(processName)
+      Long taskCode, TaskDefinition taskDefinition, String workflowName, String description) {
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
+    pcr.setName(workflowName)
         .setLocations(TaskLocationUtils.verticalLocation(taskCode))
         .setDescription(description)
-        .setTenantCode(tenantCode)
         .setTimeout("0")
-        .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+        .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
         .setTaskDefinitionJson(Collections.singletonList(taskDefinition))
         .setTaskRelationJson(TaskRelationUtils.oneLineRelation(taskCode))
         .setGlobalParams(null);
 
-    ProcessDefineResp resp = getClient().opsForProcess().create(projectCode, pcr);
+    WorkflowDefineResp resp = getClient().opsForWorkflow().create(projectCode, pcr);
     System.out.println(resp);
-    Assert.assertEquals(processName, resp.getName());
+    Assert.assertEquals(workflowName, resp.getName());
   }
 ```
 
@@ -193,14 +221,14 @@ DolphinClient dolphinClient = new DolphinClient(token,dolphinAddress,restTemplat
    *
    * <p>4.create task relations
    *
-   * <p>5.create process create parm
+   * <p>5.create workflow define param
    *
    * <p>
    */
   @Test
-  public void testCreateProcessDefinition() {
+  public void testCreateWorkflowDefinition() {
 
-    List<Long> taskCodes = getClient().opsForProcess().generateTaskCode(projectCode, 2);
+    List<Long> taskCodes = getClient().opsForWorkflow().generateTaskCode(projectCode, 2);
 
     // build shell task
     ShellTask shellTask = new ShellTask();
@@ -219,18 +247,17 @@ DolphinClient dolphinClient = new DolphinClient(token,dolphinAddress,restTemplat
     TaskDefinition httpTaskDefinition =
         TaskDefinitionUtils.createDefaultTaskDefinition(taskCodes.get(1), httpTask);
 
-    ProcessDefineParam pcr = new ProcessDefineParam();
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
     pcr.setName(WORKFLOW_NAME)
         .setLocations(TaskLocationUtils.horizontalLocation(taskCodes.toArray(new Long[0])))
         .setDescription("test-dag-description")
-        .setTenantCode(tenantCode)
         .setTimeout("0")
-        .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+        .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
         .setTaskDefinitionJson(Arrays.asList(shellTaskDefinition, httpTaskDefinition))
         .setTaskRelationJson(TaskRelationUtils.oneLineRelation(taskCodes.toArray(new Long[0])))
         .setGlobalParams(null);
 
-    System.out.println(getClient().opsForProcess().create(projectCode, pcr));
+    System.out.println(getClient().opsForWorkflow().create(projectCode, pcr));
   }
 ```
 
@@ -249,7 +276,7 @@ DolphinClient dolphinClient = new DolphinClient(token,dolphinAddress,restTemplat
 ```java
   @Test
   public void testConditionTask() {
-    List<Long> taskCodes = getClient().opsForProcess().generateTaskCode(projectCode, 4);
+    List<Long> taskCodes = getClient().opsForWorkflow().generateTaskCode(projectCode, 4);
 
     // -------------building task------------------
     // shell task
@@ -302,18 +329,17 @@ DolphinClient dolphinClient = new DolphinClient(token,dolphinAddress,restTemplat
     TaskLocation tl4 = new TaskLocation(failTaskCode, 800, 440);  
 
 
-    ProcessDefineParam pcr = new ProcessDefineParam();
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
     pcr.setName("condition-dag")
             .setLocations(Arrays.asList(tl1, tl2, tl3, tl4))
             .setDescription("test for use condition dag")
-            .setTenantCode(tenantCode)
-            .setTimeout("0")
-            .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+                .setTimeout("0")
+            .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
             .setTaskDefinitionJson(Arrays.asList(shellTaskDefinition, successTaskDefinition, failTaskDefinition, conditionTaskDefinition))
             .setTaskRelationJson(Arrays.asList(r1,r2,r3,r4))
             .setGlobalParams(null);
 
-    ProcessDefineResp resp = getClient().opsForProcess().create(projectCode, pcr);
+    WorkflowDefineResp resp = getClient().opsForWorkflow().create(projectCode, pcr);
     System.out.println(resp);
     Assert.assertEquals("condition-dag", resp.getName());
 

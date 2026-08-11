@@ -20,6 +20,8 @@ with dolphinscheduler's develop,the rest api maybe change,so there are two versi
 * `2.0.5-release` in branch `2.0.5-release`
 * `3.1.4-release` in branch `3.1.4-release`
 * `3.2.0-release` in branch `3.2.0-release`
+* `3.2.2-release` in branch `3.2.2-beta`
+* `3.4.2-release` in the master branch
 
 ## 2.3 support multiple operations
 
@@ -32,26 +34,26 @@ Project:
 
 
 
-Process Definition：
+Workflow Definition：
 
-* create process definition
+* create workflow definition
 
-* update process definition
+* update workflow definition
 
-* delete process definition
+* delete workflow definition
 
-* release(online/offline) process definition
+* release(online/offline) workflow definition
 
   
 
-Process Instance
+Workflow Instance
 
-* start process instance
-* rerun process instance
-* delete process instance
-* list process instance
-* stop process instance
-* pause process instance
+* start workflow instance
+* rerun workflow instance
+* delete workflow instance
+* list workflow instance
+* stop workflow instance
+* pause workflow instance
 
 
 
@@ -99,6 +101,39 @@ Tenant:
 * delete tenant
 * list tenant
 
+## 2.4 Migrating from 3.2.x to 3.4.2
+
+dolphin scheduler renamed `process` to `workflow` since 3.3.0, the rest api paths, request params and
+responses changed, so this sdk was renamed in the same way:
+
+| 3.2.x                                              | 3.4.2                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| `dolphinClient.opsForProcess()`                    | `dolphinClient.opsForWorkflow()`                             |
+| `dolphinClient.opsForProcessInst()`                | `dolphinClient.opsForWorkflowInstance()`                     |
+| package `com.github.weaksloth.dolphins.process`    | package `com.github.weaksloth.dolphins.workflow`             |
+| package `com.github.weaksloth.dolphins.instance`   | package `com.github.weaksloth.dolphins.workflowinstance`     |
+| `ProcessDefineParam`/`ProcessDefineResp`           | `WorkflowDefineParam`/`WorkflowDefineResp`                   |
+| `ProcessReleaseParam`                              | `WorkflowReleaseParam`                                       |
+| `ProcessInstanceCreateParam`/`ProcessInstanceQueryResp` | `WorkflowInstanceCreateParam`/`WorkflowInstanceQueryResp` |
+| `SubProcessTask`                                   | `SubWorkflowTask`(task type `SUB_WORKFLOW`)                  |
+| `ProcessExecutionTypeEnum`                         | `WorkflowExecutionTypeEnum`                                  |
+| `xxx.setProcessDefinitionCode()`                   | `xxx.setWorkflowDefinitionCode()`                            |
+| `xxx.setProcessInstancePriority()`                 | `xxx.setWorkflowInstancePriority()`                          |
+
+other incompatible changes:
+
+* a workflow definition has no tenant anymore, `tenantCode` was removed from `WorkflowDefineParam`,
+  the tenant is given when starting a workflow instance (`WorkflowInstanceCreateParam`) or creating a
+  schedule (`ScheduleDefineParam`)
+* the workflow import api was removed in 3.4.2, so `importWorkflow()` was removed too
+* the resource apis work with the absolute path of the file instead of `id` and `tenantCode`:
+  `opsForResource().page(page, size, fullName, fileName)`, `opsForResource().delete(fullName)`,
+  the root directory can be queried by `opsForResource().queryBaseDir()`
+* querying the task instance log does not need the project code:
+  `opsForTaskInstance().queryLog(skipLineNum, limit, taskInstanceId)`
+* the http task body is sent by the `httpBody` field, `HttpParametersType` has no `BODY` anymore
+* following dolphin scheduler, enums such as `UdfType`, `ResUploadType` and `AuditResourceType` were
+  removed, `AuditModelType`, `StorageType` and `WorkerGroupSource` were added
 
 # 3 Getting Started
 
@@ -197,7 +232,7 @@ The below code shows how to create a shell task as a workflow.For details, refer
 ```java
   @Test
   public void testShellTask() {
-    Long taskCode = getClient().opsForProcess().generateTaskCode(projectCode, 1).get(0);
+    Long taskCode = getClient().opsForWorkflow().generateTaskCode(projectCode, 1).get(0);
     ShellTask shellTask = new ShellTask();
     shellTask.setRawScript("echo 'hello dolphin scheduler java sdk'");
 
@@ -229,14 +264,14 @@ The below code shows how to create a shell task as a workflow.For details, refer
    *
    * <p>4.create task relations
    *
-   * <p>5.create process create parm
+   * <p>5.create workflow define param
    *
    * <p>
    */
   @Test
-  public void testCreateProcessDefinition() {
+  public void testCreateWorkflowDefinition() {
 
-    List<Long> taskCodes = getClient().opsForProcess().generateTaskCode(projectCode, 2);
+    List<Long> taskCodes = getClient().opsForWorkflow().generateTaskCode(projectCode, 2);
 
     // build shell task
     ShellTask shellTask = new ShellTask();
@@ -255,18 +290,17 @@ The below code shows how to create a shell task as a workflow.For details, refer
     TaskDefinition httpTaskDefinition =
         TaskDefinitionUtils.createDefaultTaskDefinition(taskCodes.get(1), httpTask);
 
-    ProcessDefineParam pcr = new ProcessDefineParam();
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
     pcr.setName(WORKFLOW_NAME)
         .setLocations(TaskLocationUtils.horizontalLocation(taskCodes.toArray(new Long[0])))
         .setDescription("test-dag-description")
-        .setTenantCode(tenantCode)
         .setTimeout("0")
-        .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+        .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
         .setTaskDefinitionJson(Arrays.asList(shellTaskDefinition, httpTaskDefinition))
         .setTaskRelationJson(TaskRelationUtils.oneLineRelation(taskCodes.toArray(new Long[0])))
         .setGlobalParams(null);
 
-    System.out.println(getClient().opsForProcess().create(projectCode, pcr));
+    System.out.println(getClient().opsForWorkflow().create(projectCode, pcr));
   }
 ```
 
@@ -279,7 +313,7 @@ The below code shows how to create a shell task as a workflow.For details, refer
 ```java
   @Test
   public void testConditionTask() {
-    List<Long> taskCodes = getClient().opsForProcess().generateTaskCode(projectCode, 4);
+    List<Long> taskCodes = getClient().opsForWorkflow().generateTaskCode(projectCode, 4);
 
     // -------------building task------------------
     // shell task
@@ -332,18 +366,17 @@ The below code shows how to create a shell task as a workflow.For details, refer
     TaskLocation tl4 = new TaskLocation(failTaskCode, 800, 440);  
 
 
-    ProcessDefineParam pcr = new ProcessDefineParam();
+    WorkflowDefineParam pcr = new WorkflowDefineParam();
     pcr.setName("condition-dag")
             .setLocations(Arrays.asList(tl1, tl2, tl3, tl4))
             .setDescription("test for use condition dag")
-            .setTenantCode(tenantCode)
-            .setTimeout("0")
-            .setExecutionType(ProcessDefineParam.EXECUTION_TYPE_PARALLEL)
+                .setTimeout("0")
+            .setExecutionType(WorkflowDefineParam.EXECUTION_TYPE_PARALLEL)
             .setTaskDefinitionJson(Arrays.asList(shellTaskDefinition, successTaskDefinition, failTaskDefinition, conditionTaskDefinition))
             .setTaskRelationJson(Arrays.asList(r1,r2,r3,r4))
             .setGlobalParams(null);
 
-    ProcessDefineResp resp = getClient().opsForProcess().create(projectCode, pcr);
+    WorkflowDefineResp resp = getClient().opsForWorkflow().create(projectCode, pcr);
     System.out.println(resp);
     Assert.assertEquals("condition-dag", resp.getName());
 

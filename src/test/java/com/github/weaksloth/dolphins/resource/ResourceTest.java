@@ -1,7 +1,6 @@
 package com.github.weaksloth.dolphins.resource;
 
 import com.github.weaksloth.dolphins.BaseTest;
-import com.github.weaksloth.dolphins.core.DolphinClientConstant;
 import java.io.File;
 import java.util.List;
 import org.junit.Assert;
@@ -11,22 +10,28 @@ public class ResourceTest extends BaseTest {
 
   private final String fileName = "dophinsdk-create2";
   private final String suffix = "sh";
-  private final String fullName =
-      "file:/home/"
-          + tenantCode
-          + "/ds/upload/"
-          + tenantCode
-          + "/resources/"
-          + fileName
-          + "."
-          + suffix;
+
+  /**
+   * since 3.3.0 the resource api works with the absolute path of the file, the base directory can
+   * be queried by {@link ResourceOperator#queryBaseDir()}, such as
+   * file:/dolphinscheduler/default/resources
+   */
+  private String baseDir() {
+    return getClient().opsForResource().queryBaseDir();
+  }
+
+  private String fullName() {
+    return baseDir() + fileName + "." + suffix;
+  }
+
+  @Test
+  public void testQueryBaseDir() {
+    System.out.println(baseDir());
+  }
 
   @Test
   public void testPage() {
-    List<ResourceQueryRes> list =
-        getClient()
-            .opsForResource()
-            .page(null, null, DolphinClientConstant.Resource.DEFAULT_PID_FILE, "");
+    List<ResourceQueryRes> list = getClient().opsForResource().page(null, null, baseDir(), "");
     list.forEach(System.out::println);
   }
 
@@ -34,6 +39,7 @@ public class ResourceTest extends BaseTest {
   public void testOnlineCreate() {
     ResourceCreateParam resourceCreateParam = new ResourceCreateParam();
     resourceCreateParam
+        .setCurrentDir(baseDir())
         .setSuffix(suffix)
         .setFileName(fileName)
         .setContent("created by dolphin scheduler java sdk");
@@ -43,10 +49,7 @@ public class ResourceTest extends BaseTest {
   @Test
   public void testOnlineUpdate() {
     ResourceUpdateParam resourceUpdateParam = new ResourceUpdateParam();
-    resourceUpdateParam
-        .setTenantCode(tenantCode)
-        .setFullName(fullName)
-        .setContent("update by dolphin scheduler java sdk");
+    resourceUpdateParam.setFullName(fullName()).setContent("update by dolphin scheduler java sdk");
     Assert.assertTrue(getClient().opsForResource().onlineUpdate(resourceUpdateParam));
   }
 
@@ -54,14 +57,14 @@ public class ResourceTest extends BaseTest {
   public void testUploadFile() {
     ResourceUploadParam resourceUploadParam = new ResourceUploadParam();
     resourceUploadParam
+        .setCurrentDir(baseDir())
         .setName("test_upload.txt")
-        .setDescription("upload by dolphin scheduler java sdk")
         .setFile(new File("/home/chen/Documents/test_upload.txt"));
     Assert.assertTrue(getClient().opsForResource().upload(resourceUploadParam));
   }
 
   @Test
   public void delete() {
-    Assert.assertTrue(getClient().opsForResource().delete(tenantCode, fullName));
+    Assert.assertTrue(getClient().opsForResource().delete(fullName()));
   }
 }

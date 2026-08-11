@@ -1,4 +1,4 @@
-package com.github.weaksloth.dolphins.process;
+package com.github.weaksloth.dolphins.workflow;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import lombok.Data;
 
-/** define process response,copied from org.apache.dolphinscheduler.dao.entity.ProcessDefinition */
+/**
+ * define workflow response,copied from org.apache.dolphinscheduler.dao.entity.WorkflowDefinition
+ */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProcessDefineResp {
+public class WorkflowDefineResp {
 
   /** id */
   private int id;
@@ -50,10 +52,10 @@ public class ProcessDefineResp {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
   private Date updateTime;
 
-  /** process is valid: yes/no */
+  /** workflow is valid: yes/no */
   private String flag;
 
-  /** process user id */
+  /** workflow user id */
   private int userId;
 
   /** user name */
@@ -68,20 +70,15 @@ public class ProcessDefineResp {
   /** schedule release state : online/offline */
   private String scheduleReleaseState;
 
-  /** process warning time out. unit: minute */
+  /** workflow warning time out. unit: minute */
   private int timeout;
-
-  /** tenant id */
-  private int tenantId;
-
-  /** tenant code */
-  private String tenantCode;
 
   /** modify user name */
   private String modifyBy;
 
   /** warningGroupId */
-  private int warningGroupId;
+  private Integer warningGroupId;
 
+  /** PARALLEL,SERIAL_WAIT,SERIAL_DISCARD,SERIAL_PRIORITY */
   private String executionType;
 }

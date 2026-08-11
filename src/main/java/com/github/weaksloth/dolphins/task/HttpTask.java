@@ -1,8 +1,8 @@
 package com.github.weaksloth.dolphins.task;
 
-import com.github.weaksloth.dolphins.process.Parameter;
 import com.github.weaksloth.dolphins.remote.RequestHttpEntity;
 import com.github.weaksloth.dolphins.util.JacksonUtils;
+import com.github.weaksloth.dolphins.workflow.Parameter;
 import java.util.Collections;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -24,13 +24,15 @@ public class HttpTask extends AbstractTask {
   /** http request url */
   private String url;
 
-  /** http method, {@link com.github.weaksloth.dolphins.remote.HttpMethod} */
+  /** http method, {@link com.github.weaksloth.dolphins.enums.HttpMethod} */
   private String httpMethod;
+
+  /** http request body */
+  private String httpBody;
 
   private String httpCheckCondition; // STATUS_CODE_DEFAULT
   private String condition;
   private Integer connectTimeout = 60000;
-  private Integer socketTimeout = 60000;
 
   @Override
   public String getTaskType() {
@@ -54,11 +56,6 @@ public class HttpTask extends AbstractTask {
     /** create http headers param instance */
     public static HttpParam newHeader() {
       return new HttpParam(null, null, "HEADERS");
-    }
-
-    /** create http body param instance */
-    public static HttpParam newBody() {
-      return new HttpParam(null, null, "BODY");
     }
 
     /**

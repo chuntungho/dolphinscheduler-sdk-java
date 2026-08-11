@@ -1,6 +1,6 @@
 package com.github.weaksloth.dolphins.enums;
 
-/** process define release state */
+/** workflow definition release state */
 public enum ReleaseState {
 
   /** 0 offline 1 online */

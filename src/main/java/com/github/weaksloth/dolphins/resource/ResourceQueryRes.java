@@ -5,38 +5,26 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Date;
 import lombok.Data;
 
-/** copied from org.apache.dolphinscheduler.dao.entity.Resource */
+/** copied from org.apache.dolphinscheduler.api.vo.ResourceItemVO */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResourceQueryRes {
 
-  /** id */
-  private int id;
-
-  /** parent id */
-  private int pid;
-
   /** resource alias */
   private String alias;
 
-  /** full name */
+  private String userName;
+
+  /** file name */
+  private String fileName;
+
+  /** the absolute path of the resource */
   private String fullName;
 
   /** is directory */
   private boolean isDirectory = false;
 
-  /** description */
-  private String description;
-
-  /** file alias */
-  private String fileName;
-
-  private String userName;
-
-  /** user id */
-  private int userId;
-
-  /** resource type */
+  /** resource type: FILE, ALL */
   private String type;
 
   /** resource size */

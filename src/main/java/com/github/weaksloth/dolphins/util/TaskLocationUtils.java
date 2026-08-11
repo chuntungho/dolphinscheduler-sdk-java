@@ -1,6 +1,6 @@
 package com.github.weaksloth.dolphins.util;
 
-import com.github.weaksloth.dolphins.process.TaskLocation;
+import com.github.weaksloth.dolphins.workflow.TaskLocation;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.github.weaksloth.dolphins.process;
+package com.github.weaksloth.dolphins.workflow;
 
 public class SimpleWorkflow {
   private Integer id;

@@ -14,15 +14,17 @@ public class ScheduleDefineParam {
 
   private String warningType = "NONE";
 
-  private String processInstancePriority = "MEDIUM";
+  private String workflowInstancePriority = "MEDIUM";
 
   private String warningGroupId = "0";
 
   private String workerGroup = "default";
 
+  private String tenantCode = "default";
+
   private String environmentCode = "";
 
-  private Long processDefinitionCode;
+  private Long workflowDefinitionCode;
 
   @Data
   @Accessors(chain = true)

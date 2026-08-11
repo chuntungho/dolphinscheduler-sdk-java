@@ -1,6 +1,6 @@
 package com.github.weaksloth.dolphins.enums;
 
-/** define process and task priority */
+/** define workflow and task priority */
 public enum Priority {
 
   /** 0 highest priority 1 higher priority 2 medium priority 3 lower priority 4 lowest priority */

@@ -26,8 +26,8 @@ public class SqlTask extends AbstractTask {
   /** display rows */
   private Integer displayRows;
 
-  /** udf list */
-  private String udfs;
+  /** result display type, such as TABLE, ATTACHMENT */
+  private String showType;
 
   /** SQL connection parameters */
   private String connParams;

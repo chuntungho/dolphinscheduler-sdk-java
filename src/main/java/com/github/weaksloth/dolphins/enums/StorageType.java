@@ -1,7 +1,7 @@
 package com.github.weaksloth.dolphins.enums;
 
-/** data base types */
-public enum ResUploadType {
+/** the storage type of the resource center, replaces ResUploadType */
+public enum StorageType {
   LOCAL,
   HDFS,
   S3,
